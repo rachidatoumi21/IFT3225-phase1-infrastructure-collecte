@@ -1,0 +1,8 @@
+Pour le projet, nous avons décidé de prendre le café comme endroit d'échantillonage de nos données. Puisque le niveau d'achalandage change au courant de la journée, 
+le niveau du son ambiant, de la quantité de personnes présentes, etc. sont des mesures qui sont directement affectées et que nous allons prendre en considération lors
+de notre collecte. Nous avons donc décidé de mettre en place un système de collecte des données mixte, ou plutôt hybride. Du côté automatique, nous allons utiliser 
+un téléphone avec Phyphox pour aller chercher le niveau du son, ou encore la fréquence d'une tonalité spécifique, comme la petite cloche aux portes des cafés (nous
+utiliserions cette information pour compter le nombre de fois la porte s'ouvre par jour et ainsi avoir une bonne estimation du niveau d'achalandage). Du côté manuel, 
+ce type de données est un peu différent. Le nombre de fois que la porte s'ouvre par jour peut quand même être suivi, mais sinon nous pensions aussi simplement compter
+le nombre de clients présents dans le magasin une fois par minute pour la totalité des 20 minutes de chaque période d'échantillonage. Pour le niveau du son, dans le cas 
+d'une collecte manuelle, nous n'aurions pas de données quantitatives, mais plutôt des paliers qualitatifs comme par exemple; silencieux, calme, ambiant, bruyant, etc.
