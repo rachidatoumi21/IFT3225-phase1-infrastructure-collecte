@@ -1,0 +1,10 @@
+timestamp,location,proximity,vibe,notes
+2026-05-27T09:30:00.000Z,bibliotheque-udem,far,calm,Session matin - peu de personnes autour
+2026-05-27T09:40:00.000Z,bibliotheque-udem,far,calm,Session matin - ambiance calme
+2026-05-27T09:50:00.000Z,bibliotheque-udem,medium,normal,Session matin - quelques personnes proches
+2026-05-27T12:00:00.000Z,bibliotheque-udem,near,busy,Session midi - plusieurs personnes presentes
+2026-05-27T12:10:00.000Z,bibliotheque-udem,near,busy,Session midi - discussions proches
+2026-05-27T12:20:00.000Z,bibliotheque-udem,medium,normal,Session midi - ambiance moderee
+2026-05-27T17:30:00.000Z,bibliotheque-udem,medium,normal,Session soir - ambiance moderee
+2026-05-27T17:40:00.000Z,bibliotheque-udem,near,busy,Session soir - plus de mouvement
+2026-05-27T17:50:00.000Z,bibliotheque-udem,far,calm,Session soir - retour au calme
