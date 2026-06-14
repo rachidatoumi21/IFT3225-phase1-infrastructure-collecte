@@ -160,7 +160,7 @@ Corps attendu :
 ```json
 {
   "type": "sound_level",
-  "value": -52.8,
+  "value": 55.4,
   "unit": "dB",
   "location": "bibliotheque-udem",
   "timestamp": "2026-05-27T09:30:00.000Z"
@@ -175,7 +175,7 @@ Réponse `201 Created` :
   "data": {
     "id": "measurement_id",
     "type": "sound_level",
-    "value": -52.8,
+    "value": 55.4,
     "unit": "dB",
     "location": "bibliotheque-udem",
     "timestamp": "2026-05-27T09:30:00.000Z",
@@ -462,7 +462,7 @@ Ce choix simplifie la phase 1, car il évite de créer une ressource supplément
 
 ## 11. Limites et évolutions possibles
 
-Les mesures phyphox peuvent ne pas être parfaitement étalonnées. Elles sont utilisées comme indicateurs comparatifs du niveau sonore ambiant.
+Les mesures phyphox peuvent ne pas être parfaitement étalonnées. L'expérience « Intensité sonore » de phyphox exprime le niveau sonore en dB SPL, dont le point de référence est 20 µPa (seuil de l'audition humaine). Sur cette échelle, les valeurs valides sont positives (0 dB = seuil d'audition, conversation normale ≈ 60–70 dB). Une valeur négative indiquerait un niveau sous le seuil de l'audition, ce qui est physiquement improbable dans un lieu réel et traduit plutôt un défaut d'étalonnage du microphone. De telles valeurs sont donc considérées comme invalides : le modèle `measurements` rejette les valeurs négatives. Les mesures retenues sont utilisées comme indicateurs comparatifs du niveau sonore ambiant entre différentes périodes.
 
 La collecte environnementale contient une partie manuelle, donc elle peut être subjective.
 

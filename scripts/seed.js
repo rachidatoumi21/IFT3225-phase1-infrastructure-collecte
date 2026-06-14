@@ -14,78 +14,173 @@ async function seed() {
     await Measurement.deleteMany();
     await Observation.deleteMany();
 
-    const device = await Device.create({
-      name: "iPhone de collecte",
+    // --- Devices ---
+    const deviceMatin = await Device.create({
+      name: "iPhone session matin",
       location: "bibliotheque-udem",
       apiKey: generateApiKey()
     });
 
-    const now = new Date();
+    const deviceMidi = await Device.create({
+      name: "iPhone session midi",
+      location: "bibliotheque-udem",
+      apiKey: generateApiKey()
+    });
 
+    // --- Measurements (3 sessions, dB SPL positive values) ---
+    // Session matin ~9h30
     await Measurement.insertMany([
       {
         type: "sound_level",
-        value: 42.5,
+        value: 38.5,
         unit: "dB",
         location: "bibliotheque-udem",
-        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000),
-        device: device._id
+        timestamp: new Date("2026-05-27T09:30:00.000Z"),
+        device: deviceMatin._id
       },
       {
         type: "sound_level",
-        value: 55.2,
+        value: 36.2,
         unit: "dB",
         location: "bibliotheque-udem",
-        timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000),
-        device: device._id
+        timestamp: new Date("2026-05-27T09:40:00.000Z"),
+        device: deviceMatin._id
       },
       {
         type: "sound_level",
-        value: 63.7,
+        value: 51.8,
         unit: "dB",
         location: "bibliotheque-udem",
-        timestamp: new Date(now.getTime() - 60 * 60 * 1000),
-        device: device._id
+        timestamp: new Date("2026-05-27T09:50:00.000Z"),
+        device: deviceMatin._id
+      },
+      // Session midi ~12h00
+      {
+        type: "sound_level",
+        value: 64.5,
+        unit: "dB",
+        location: "bibliotheque-udem",
+        timestamp: new Date("2026-05-27T12:00:00.000Z"),
+        device: deviceMidi._id
       },
       {
         type: "sound_level",
-        value: 48.1,
+        value: 68.1,
         unit: "dB",
         location: "bibliotheque-udem",
-        timestamp: new Date(now.getTime() - 20 * 60 * 1000),
-        device: device._id
+        timestamp: new Date("2026-05-27T12:10:00.000Z"),
+        device: deviceMidi._id
+      },
+      {
+        type: "sound_level",
+        value: 55.4,
+        unit: "dB",
+        location: "bibliotheque-udem",
+        timestamp: new Date("2026-05-27T12:20:00.000Z"),
+        device: deviceMidi._id
+      },
+      // Session soir ~17h30
+      {
+        type: "sound_level",
+        value: 52.7,
+        unit: "dB",
+        location: "bibliotheque-udem",
+        timestamp: new Date("2026-05-27T17:30:00.000Z"),
+        device: deviceMatin._id
+      },
+      {
+        type: "sound_level",
+        value: 47.3,
+        unit: "dB",
+        location: "bibliotheque-udem",
+        timestamp: new Date("2026-05-27T17:50:00.000Z"),
+        device: deviceMatin._id
       }
     ]);
 
+    // --- Observations (from manual_observations.csv) ---
     await Observation.insertMany([
       {
         location: "bibliotheque-udem",
         proximity: "far",
         vibe: "calm",
-        notes: "Peu de personnes autour.",
-        timestamp: new Date(now.getTime() - 3 * 60 * 60 * 1000),
-        device: device._id
+        notes: "Session matin - peu de personnes autour",
+        timestamp: new Date("2026-05-27T09:30:00.000Z"),
+        device: deviceMatin._id
       },
       {
         location: "bibliotheque-udem",
-        proximity: "near",
-        vibe: "busy",
-        notes: "Plusieurs personnes présentes vers midi.",
-        timestamp: new Date(now.getTime() - 2 * 60 * 60 * 1000),
-        device: device._id
+        proximity: "far",
+        vibe: "calm",
+        notes: "Session matin - ambiance calme",
+        timestamp: new Date("2026-05-27T09:40:00.000Z"),
+        device: deviceMatin._id
       },
       {
         location: "bibliotheque-udem",
         proximity: "medium",
         vibe: "normal",
-        notes: "Ambiance modérée en fin de journée.",
-        timestamp: new Date(now.getTime() - 20 * 60 * 1000),
-        device: device._id
+        notes: "Session matin - quelques personnes proches",
+        timestamp: new Date("2026-05-27T09:50:00.000Z"),
+        device: deviceMatin._id
+      },
+      {
+        location: "bibliotheque-udem",
+        proximity: "near",
+        vibe: "busy",
+        notes: "Session midi - plusieurs personnes presentes",
+        timestamp: new Date("2026-05-27T12:00:00.000Z"),
+        device: deviceMidi._id
+      },
+      {
+        location: "bibliotheque-udem",
+        proximity: "near",
+        vibe: "busy",
+        notes: "Session midi - discussions proches",
+        timestamp: new Date("2026-05-27T12:10:00.000Z"),
+        device: deviceMidi._id
+      },
+      {
+        location: "bibliotheque-udem",
+        proximity: "medium",
+        vibe: "normal",
+        notes: "Session midi - ambiance moderee",
+        timestamp: new Date("2026-05-27T12:20:00.000Z"),
+        device: deviceMidi._id
+      },
+      {
+        location: "bibliotheque-udem",
+        proximity: "medium",
+        vibe: "normal",
+        notes: "Session soir - ambiance moderee",
+        timestamp: new Date("2026-05-27T17:30:00.000Z"),
+        device: deviceMatin._id
+      },
+      {
+        location: "bibliotheque-udem",
+        proximity: "near",
+        vibe: "busy",
+        notes: "Session soir - plus de mouvement",
+        timestamp: new Date("2026-05-27T17:40:00.000Z"),
+        device: deviceMatin._id
+      },
+      {
+        location: "bibliotheque-udem",
+        proximity: "far",
+        vibe: "calm",
+        notes: "Session soir - retour au calme",
+        timestamp: new Date("2026-05-27T17:50:00.000Z"),
+        device: deviceMatin._id
       }
     ]);
 
-    console.log("Données seed insérées avec succès");
-    console.log("Clé API de test :", device.apiKey);
+    console.log("✅ Données seed insérées avec succès");
+    console.log("--------------------------------------------");
+    console.log("Clé API — iPhone session matin :", deviceMatin.apiKey);
+    console.log("Clé API — iPhone session midi  :", deviceMidi.apiKey);
+    console.log("--------------------------------------------");
+    console.log("8 mesures sonores insérées");
+    console.log("9 observations environnementales insérées");
 
     process.exit(0);
   } catch (error) {

@@ -151,7 +151,8 @@ async function getQuietHours(req, res, next) {
     measurements.forEach((measurement) => {
       const date = new Date(measurement.timestamp);
       const hour = date.getHours();
-      const key = `${hour.toString().padStart(2, "0")}:00-${(hour + 1)
+      const nextHour = (hour + 1) % 24;
+      const key = `${hour.toString().padStart(2, "0")}:00-${nextHour
         .toString()
         .padStart(2, "0")}:00`;
 
