@@ -415,6 +415,15 @@ Comportement attendu :
 | Clé API invalide |             `403` |
 | Clé API valide   | Requête autorisée |
 
+Les endpoints d’écriture POST /api/measurements et POST /api/observations sont protégés par une clé API transmise dans l’en-tête x-api-key.
+
+Trois cas ont été testés avec Postman :
+- absence de x-api-key : réponse 401 Unauthorized;
+- clé API invalide : réponse 403 Forbidden;
+- clé API valide : réponse 201 Created.
+
+Cela confirme que le middleware d’authentification bloque les requêtes non autorisées et accepte uniquement les devices enregistrés.
+
 En phase 1, `POST /api/devices` n’est pas protégé. Cette faille permettrait à n’importe quel client de créer un appareil et d’obtenir une clé API. Une solution future serait de protéger cet endpoint avec une clé administrateur ou un compte d’administration.
 
 ---
