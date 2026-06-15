@@ -353,9 +353,9 @@ Renseigner `PHYPHOX_URL` et `API_KEY` dans `.env` (voir `.env.example`), puis :
 npm run bridge
 ```
 
-Le buffer lu par défaut est `dB`. Si aucune valeur n'est reçue, vérifier le nom exact du buffer en ouvrant `http://<ip-telephone>:8080/config` dans un navigateur et ajuster `PHYPHOX_BUFFER`.
+Le buffer lu par défaut est `dB`. Si aucune valeur n'est reçue, vérifier le nom exact du buffer en ouvrant `http://<ip-telephone>:80/config` dans un navigateur et ajuster `PHYPHOX_BUFFER`.
 
-**Fallback manuel :** si la collecte automatique échoue, l'équipe saisit les observations dans `manual_observations.csv`, qui peut ensuite être importé via le script seed ou rejoué manuellement.
+**Fallback manuel :** si la collecte automatique échoue, saisir les observations dans `manual_observations.csv`, qui peut ensuite être importé via le script seed ou rejoué manuellement.
 
 ---
 
