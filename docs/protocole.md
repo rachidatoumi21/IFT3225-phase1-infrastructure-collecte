@@ -474,3 +474,8 @@ La collecte environnementale contient une partie manuelle, donc elle peut être 
 L’endpoint `POST /api/devices` non protégé est une vulnérabilité connue de la phase 1. Une amélioration future serait d’exiger une clé administrateur pour créer un appareil.
 
 La gestion des lieux pourrait aussi être améliorée avec une ressource dédiée `/api/locations`.
+
+---
+## 12. Tache 4 
+
+L’objectif est de créer un bridge Node.js. Le téléphone exécute l’expérience “Intensité sonore” dans phyphox et expose ses mesures via l’accès distant. Le bridge interroge phyphox à intervalle régulier toutes les 5 secondes, extrait la valeur dB SPL, puis envoie une requête POST vers /api/measurements avec une clé API dans l’en-tête x-api-key. Le serveur Express valide la requête, persiste la mesure dans MongoDB Atlas et rend ensuite les données consultables via les endpoints GET.
