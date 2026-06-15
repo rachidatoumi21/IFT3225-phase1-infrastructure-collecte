@@ -342,7 +342,7 @@ Le script `scripts/bridge.js` achemine les mesures sonores du téléphone vers l
 
 1. Ouvrir l'expérience « Intensité sonore » dans Phyphox
 2. Menu (⋮) → « Activer l'accès distant »
-3. Noter l'adresse affichée (ex. `http://192.168.1.42:8080`) — le téléphone et l'ordinateur doivent être sur le même réseau Wi-Fi
+3. Noter l'adresse affichée (ex. `http://192.168.1.42:80`) — le téléphone et l'ordinateur doivent être sur le même réseau Wi-Fi
 4. Démarrer la mesure (▶)
 
 **Côté ordinateur :**
