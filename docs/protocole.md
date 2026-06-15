@@ -30,6 +30,11 @@ Le système reçoit deux types de données :
 La ressource `ambiance` ne stocke pas directement de données. Elle calcule ses réponses à partir des collections `measurements` et `observations`.
 
 ---
+### important :
+Les Clés secrets ne sont pas inclus dans le dépôt GitHub. 
+Pour exécuter le projet, créer un fichier .env à partir de .env.example et remplir les variables nécessaires.
+
+Une clé API peut être générée avec POST /api/devices.
 
 ## 3. Conventions générales
 
