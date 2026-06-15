@@ -2,7 +2,7 @@
 
 API Express connectée à MongoDB Atlas pour collecter, authentifier, persister et consulter des données d'ambiance sonore en quasi temps réel.
 
-**Lieu de collecte :** `bibliotheque-udem`
+**Lieu de collecte :** bibliotheque-udem
 
 ---
 
