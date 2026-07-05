@@ -8,7 +8,8 @@
     "dev": "nodemon src/index.js",
     "seed": "node scripts/seed.js",
     "bridge": "node scripts/phyphoxBridge.js",
-    "inspect:phyphox": "node scripts/inspectPhyphox.js"
+    "inspect:phyphox": "node scripts/inspectPhyphox.js",
+    "seed:locations": "node scripts/seedPhase2Locations.js"
   },
   "keywords": [
     "ift3225",
