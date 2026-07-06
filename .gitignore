@@ -4,3 +4,5 @@ node_modules/
 npm-debug.log
 client/.env
 client/node_modules/
+dist/
+client/dist/
