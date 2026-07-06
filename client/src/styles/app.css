@@ -1,0 +1,426 @@
+/* Base générale */
+
+:root {
+  font-family: Arial, system-ui, sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f7fb;
+}
+
+a {
+  color: inherit;
+}
+
+/* Structure générale de l’application  */
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 40px;
+  background: #ffffff;
+  border-bottom: 1px solid #dbe4f0;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.app-header p {
+  margin: 4px 0 0;
+  color: #667085;
+}
+
+.app-nav a {
+  font-weight: 700;
+  text-decoration: none;
+  color: #2563eb;
+}
+
+.app-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 56px;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Blocs principaux des pages */
+.hero,
+.detail-hero,
+.map-section,
+.locations-section,
+.chart-card,
+.quiet-card,
+.scale-card,
+.raw-summary {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.hero h2,
+.detail-hero h2 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.hero p,
+.detail-hero p {
+  max-width: 760px;
+  color: #667085;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin: 0 0 6px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #667085;
+}
+
+/* États : chargement, erreur, vide */
+.state-box {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+}
+
+.loading-state {
+  color: #2563eb;
+}
+
+.error-state {
+  color: #991b1b;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.empty-state {
+  color: #475467;
+}
+
+/* Carte Leaflet */
+.ambiance-map {
+  height: 460px;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #dbe4f0;
+}
+
+.map-note {
+  margin: 14px 0 0;
+  color: #667085;
+  font-size: 14px;
+}
+
+.map-marker {
+  min-width: 100px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  border: 2px solid #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+}
+
+.marker-stale {
+  opacity: 0.72;
+}
+
+/* Badges d’ambiance */
+.ambiance-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+
+.badge-calm {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.badge-moderate {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fde68a;
+}
+
+.badge-active {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.badge-unknown {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+/* Cartes de résumé des lieux */
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.location-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.location-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.location-card h3 {
+  margin: 0 0 4px;
+}
+
+.location-card p {
+  margin: 0;
+  color: #667085;
+}
+
+.location-address {
+  font-size: 14px;
+  color: #667085;
+}
+
+.location-description {
+  min-height: 48px;
+}
+
+.location-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.location-stats div {
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.stat-label {
+  display: block;
+  color: #667085;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.location-stats strong {
+  color: #172033;
+}
+
+/* Liens et boutons */
+.primary-link,
+.back-link,
+.popup-link {
+  display: inline-flex;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.back-link {
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+/* Page détaillée d’un lieu */
+.detail-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.detail-grid,
+.scale-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.scale-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.metric-card h3 {
+  margin: 0 0 12px;
+}
+
+.metric-card strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.metric-card p {
+  color: #667085;
+}
+
+/* Message de données anciennes */
+.stale-warning {
+  font-size: 14px;
+  color: #92400e !important;
+}
+
+.stale-panel {
+  padding: 16px 18px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 16px;
+  color: #92400e;
+  font-weight: 700;
+}
+
+/* Graphique historique */
+.chart-help {
+  color: #667085;
+  margin-top: -6px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+ /* Créneaux calmes */
+.quiet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quiet-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.quiet-list li:last-child {
+  border-bottom: none;
+}
+
+.quiet-count {
+  display: block;
+  color: #667085;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* Popup Leaflet */
+.popup-content {
+  min-width: 220px;
+}
+
+.popup-content h3 {
+  margin: 0 0 8px;
+}
+
+.popup-content p {
+  margin: 8px 0;
+}
+
+/* Résumé brut de l’API */
+.raw-summary pre {
+  overflow: auto;
+  max-height: 320px;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+/* Responsive mobile */
+@media (max-width: 900px) {
+  .app-header,
+  .detail-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .location-grid,
+  .detail-grid,
+  .scale-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .app-main {
+    padding: 24px 16px;
+  }
+
+  .ambiance-map {
+    height: 380px;
+  }
+}
