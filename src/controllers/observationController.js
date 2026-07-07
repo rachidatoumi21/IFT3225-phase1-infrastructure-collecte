@@ -1,51 +1,36 @@
 const Observation = require("../models/Observation");
 
-function buildObservationFilter(query) {
-  const filter = {};
-
-  if (query.location) {
-    filter.location = query.location.toLowerCase();
-  }
-
-  if (query.proximity) {
-    filter.proximity = query.proximity;
-  }
-
-  if (query.vibe) {
-    filter.vibe = query.vibe;
-  }
-
-  if (query.from || query.to) {
-    filter.timestamp = {};
-
-    if (query.from) {
-      filter.timestamp.$gte = new Date(query.from);
-    }
-
-    if (query.to) {
-      filter.timestamp.$lte = new Date(query.to);
-    }
-  }
-
-  return filter;
-}
-
 async function createObservation(req, res, next) {
   try {
     const { location, proximity, vibe, notes, timestamp } = req.body;
+
+    if (!location || !proximity || !vibe) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Les champs location, proximity et vibe sont obligatoires."
+        }
+      });
+    }
 
     const observation = await Observation.create({
       location,
       proximity,
       vibe,
-      notes,
-      timestamp,
-      device: req.device._id
+      notes: notes || "",
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      author: req.user._id
     });
+
+    const populatedObservation = await Observation.findById(
+      observation._id
+    ).populate("author", "name email role");
 
     res.status(201).json({
       success: true,
-      data: observation
+      message: "Observation créée avec succès.",
+      data: populatedObservation
     });
   } catch (error) {
     next(error);
@@ -54,12 +39,18 @@ async function createObservation(req, res, next) {
 
 async function getObservations(req, res, next) {
   try {
-    const filter = buildObservationFilter(req.query);
-    const limit = Number(req.query.limit) || 100;
+    const { location } = req.query;
+
+    const filter = {};
+
+    if (location) {
+      filter.location = location;
+    }
 
     const observations = await Observation.find(filter)
+      .populate("author", "name email role")
       .sort({ timestamp: -1 })
-      .limit(limit);
+      .limit(100);
 
     res.status(200).json({
       success: true,

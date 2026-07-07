@@ -23,6 +23,12 @@ const observationSchema = new mongoose.Schema(
       trim: true,
       default: ""
     },
+
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
     timestamp: {
       type: Date,
       required: [true, "Le timestamp est obligatoire"]
