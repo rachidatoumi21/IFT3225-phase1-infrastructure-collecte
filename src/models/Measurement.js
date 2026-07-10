@@ -10,8 +10,6 @@ const measurementSchema = new mongoose.Schema(
     value: {
       type: Number,
       required: [true, "La valeur de mesure est obligatoire"],
-      min: [0, "La valeur sonore ne peut pas être négative (dB SPL)"],
-      max: [200, "La valeur sonore ne peut pas dépasser 200 dB"]
     },
     unit: {
       type: String,

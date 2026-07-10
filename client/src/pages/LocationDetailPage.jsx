@@ -14,6 +14,28 @@ import ErrorState from "../components/common/ErrorState";
 import EmptyState from "../components/common/EmptyState";
 import { formatDateTime, formatNumber } from "../utils/formatDate";
 
+function formatSummaryWindow(analysisWindow) {
+  if (analysisWindow === "last_30_minutes") {
+    return "30 dernières minutes";
+  }
+
+  if (!analysisWindow) {
+    return "Non précisée";
+  }
+
+  return analysisWindow;
+}
+
+function formatSummaryProximity(proximity) {
+  const labels = {
+    near: "Proche",
+    medium: "Moyenne",
+    far: "Faible"
+  };
+
+  return labels[proximity] || "Non disponible";
+}
+
 function LocationDetailPage() {
   const { slug } = useParams();
 
@@ -45,9 +67,11 @@ function LocationDetailPage() {
         setLocation(foundLocation);
 
         const summaryResult = await getAmbianceSummary(slug).catch(() => null);
-        const historyResult = await getAmbianceHistory(slug, "3h").catch(
+
+        const historyResult = await getAmbianceHistory(slug, "720h").catch(
           () => null
         );
+
         const quietHoursResult = await getQuietHours(slug).catch(() => null);
 
         setSummary(summaryResult?.data || null);
@@ -164,9 +188,55 @@ function LocationDetailPage() {
       <QuietHoursList quietHours={quietHours} />
 
       {summary && (
-        <section className="raw-summary">
-          <h3>Résumé descriptif renvoyé par l’API</h3>
-          <pre>{JSON.stringify(summary, null, 2)}</pre>
+        <section className="api-summary-card">
+          <h3>Résumé interprété par l’API</h3>
+
+          <p className="summary-intro">
+            Cette section présente les informations descriptives renvoyées par
+            le serveur. La classification officielle du lieu est affichée dans
+            le badge ci-dessus et n’est pas recalculée par React.
+          </p>
+
+          <div className="summary-grid">
+            <div className="summary-item">
+              <span className="summary-label">Lieu analysé</span>
+              <strong>{location.name}</strong>
+            </div>
+
+            <div className="summary-item">
+              <span className="summary-label">Fenêtre d’analyse</span>
+              <strong>{formatSummaryWindow(summary.window)}</strong>
+            </div>
+
+            <div className="summary-item">
+              <span className="summary-label">Niveau sonore moyen</span>
+              <strong>
+                {summary.averageSoundLevel === null ||
+                summary.averageSoundLevel === undefined
+                  ? "Non disponible"
+                  : `${formatNumber(summary.averageSoundLevel)} ${
+                      summary.unit || "dB"
+                    }`}
+              </strong>
+            </div>
+
+            <div className="summary-item">
+              <span className="summary-label">Proximité humaine</span>
+              <strong>{formatSummaryProximity(summary.proximity)}</strong>
+            </div>
+
+            <div className="summary-item">
+              <span className="summary-label">État de fraîcheur</span>
+              <strong>
+                {hasRecentMeasurement ? "Données récentes" : "Données anciennes"}
+              </strong>
+            </div>
+
+            <div className="summary-item">
+              <span className="summary-label">Classification officielle</span>
+              <strong>{classification?.label || "Inconnue"}</strong>
+            </div>
+          </div>
         </section>
       )}
     </div>
