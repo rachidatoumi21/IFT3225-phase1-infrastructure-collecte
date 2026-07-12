@@ -465,16 +465,23 @@ a {
 /* Responsive mobile */
 @media (max-width: 900px) {
   .app-header,
-  .detail-hero {
+  .detail-hero,
+  .favorite-panel {
     flex-direction: column;
     align-items: flex-start;
   }
-
   .location-grid,
   .detail-grid,
   .scale-grid,
-  .summary-grid {
+  .summary-grid,
+  .account-grid,
+  .account-identity,
+  .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .account-list-item {
+    flex-direction: column;
   }
 
   .app-main {
@@ -595,4 +602,196 @@ a {
 .auth-switch a {
   color: #2563eb;
   font-weight: 800;
+}
+
+/* Espace compte */
+
+.account-card,
+.account-section {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.account-card h2 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.account-card p {
+  color: #667085;
+}
+
+.account-identity {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.account-identity div {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.account-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.account-list-item h3 {
+  margin: 0 0 6px;
+}
+
+.account-list-item p {
+  margin: 0;
+  color: #667085;
+}
+
+.account-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  font-size: 14px;
+  color: #475467;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.account-place-card {
+  padding: 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.account-place-card h3 {
+  margin: 0 0 8px;
+}
+
+.account-place-card p {
+  color: #667085;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  background: #ffffff;
+  color: #2563eb;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.success-message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf3;
+  border: 1px solid #86efac;
+  color: #166534 !important;
+  font-weight: 800;
+}
+
+/* Bouton favori sur la page détail */
+
+.favorite-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.favorite-panel h3 {
+  margin: 0 0 6px;
+}
+
+.favorite-panel p {
+  margin: 0;
+  color: #667085;
+}
+
+/* Formulaire de soumission d’observation */
+
+.observation-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.observation-card h3 {
+  margin: 0 0 6px;
+}
+
+.observation-card p {
+  color: #667085;
+}
+
+.observation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-group select,
+.form-group textarea {
+  padding: 12px 14px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  font: inherit;
+  background: #ffffff;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: 3px solid #bfdbfe;
+  border-color: #2563eb;
+}
+
+.form-group textarea {
+  resize: vertical;
 }

@@ -16,15 +16,16 @@ function Header() {
 
         {isAuthenticated ? (
           <>
-            <span className="nav-user">Connectée : {user.name}</span>
+            <NavLink to="/compte">Mon compte</NavLink>
+            <span className="nav-user">{user?.name}</span>
             <button className="nav-button" type="button" onClick={logout}>
               Déconnexion
             </button>
           </>
         ) : (
           <>
-            <NavLink to="/connexion">Connexion</NavLink>
-            <NavLink to="/inscription">Inscription</NavLink>
+            <NavLink to="/login">Connexion</NavLink>
+            <NavLink to="/register">Inscription</NavLink>
           </>
         )}
       </nav>

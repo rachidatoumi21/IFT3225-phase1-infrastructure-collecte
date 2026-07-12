@@ -6,13 +6,20 @@ import {
   getAmbianceSummary,
   getQuietHours
 } from "../api/ambianceApi";
+import {
+  addFavoriteLocation,
+  getMyFavorites,
+  removeFavoriteLocation
+} from "../api/accountApi";
 import AmbianceBadge from "../components/ambiance/AmbianceBadge";
 import HistoryChart from "../components/ambiance/HistoryChart";
 import QuietHoursList from "../components/ambiance/QuietHoursList";
 import LoadingState from "../components/common/LoadingState";
 import ErrorState from "../components/common/ErrorState";
 import EmptyState from "../components/common/EmptyState";
+import { useAuth } from "../context/AuthContext";
 import { formatDateTime, formatNumber } from "../utils/formatDate";
+import ObservationForm from "../components/observations/ObservationForm";
 
 function formatSummaryWindow(analysisWindow) {
   if (analysisWindow === "last_30_minutes") {
@@ -38,11 +45,16 @@ function formatSummaryProximity(proximity) {
 
 function LocationDetailPage() {
   const { slug } = useParams();
+  const { token, isAuthenticated } = useAuth();
 
   const [location, setLocation] = useState(null);
   const [summary, setSummary] = useState(null);
   const [history, setHistory] = useState(null);
   const [quietHours, setQuietHours] = useState(null);
+
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [favoriteMessage, setFavoriteMessage] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -52,6 +64,7 @@ function LocationDetailPage() {
       try {
         setLoading(true);
         setErrorMessage("");
+        setFavoriteMessage("");
 
         const locationsResponse = await getLocations();
 
@@ -77,6 +90,15 @@ function LocationDetailPage() {
         setSummary(summaryResult?.data || null);
         setHistory(historyResult?.data || null);
         setQuietHours(quietHoursResult?.data || null);
+
+        if (isAuthenticated && token) {
+          const favoritesResult = await getMyFavorites(token).catch(() => null);
+          const favorites = favoritesResult?.data || [];
+
+          setIsFavorite(favorites.some((favorite) => favorite.slug === slug));
+        } else {
+          setIsFavorite(false);
+        }
       } catch (error) {
         setErrorMessage(error.message);
       } finally {
@@ -85,7 +107,32 @@ function LocationDetailPage() {
     }
 
     loadLocationPortrait();
-  }, [slug]);
+  }, [slug, isAuthenticated, token]);
+
+  async function handleFavoriteToggle() {
+    if (!token) {
+      return;
+    }
+
+    try {
+      setFavoriteLoading(true);
+      setFavoriteMessage("");
+
+      if (isFavorite) {
+        await removeFavoriteLocation(slug, token);
+        setIsFavorite(false);
+        setFavoriteMessage("Ce lieu a été retiré de vos favoris.");
+      } else {
+        await addFavoriteLocation(slug, token);
+        setIsFavorite(true);
+        setFavoriteMessage("Ce lieu a été ajouté à vos favoris.");
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setFavoriteLoading(false);
+    }
+  }
 
   if (loading) {
     return <LoadingState message="Chargement du portrait d’ambiance..." />;
@@ -121,6 +168,51 @@ function LocationDetailPage() {
         <AmbianceBadge classification={classification} />
       </section>
 
+      <section className="favorite-panel">
+        {isAuthenticated ? (
+          <>
+            <div>
+              <h3>Favori</h3>
+              <p>
+                Ajoutez ce lieu à vos favoris pour le retrouver rapidement dans
+                votre espace compte.
+              </p>
+            </div>
+
+            <button
+              className={isFavorite ? "secondary-button" : "primary-button"}
+              type="button"
+              onClick={handleFavoriteToggle}
+              disabled={favoriteLoading}
+            >
+              {favoriteLoading
+                ? "Traitement..."
+                : isFavorite
+                  ? "Retirer des favoris"
+                  : "Ajouter aux favoris"}
+            </button>
+          </>
+        ) : (
+          <>
+            <div>
+              <h3>Action protégée</h3>
+              <p>
+                Connectez-vous pour ajouter ce lieu à vos favoris et le gérer
+                dans votre espace compte.
+              </p>
+            </div>
+
+            <Link className="primary-link" to="/login">
+              Se connecter
+            </Link>
+          </>
+        )}
+      </section>
+
+      {favoriteMessage && <p className="success-message">{favoriteMessage}</p>}
+
+      <ObservationForm locationSlug={location.slug} />
+      
       <section className="detail-grid">
         <article className="metric-card">
           <h3>Classification actuelle</h3>
