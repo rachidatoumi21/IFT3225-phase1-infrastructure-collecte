@@ -1,410 +1,704 @@
-# IFT3225 — Phase 1 : Infrastructure de collecte
+# IFT3225 — Ambiance API — Phase 2
 
-API Express connectée à MongoDB Atlas pour collecter, authentifier, persister et consulter des données d'ambiance sonore en quasi temps réel.
+Projet réalisé dans le cadre du cours **IFT3225 — Technologies de l’Internet**.
 
-**Lieu de collecte :** bibliotheque-udem
+Cette application permet de collecter, persister et exposer des données d’ambiance sonore associées à différents lieux. La phase 2 ajoute une application cliente React qui consomme l’API, visualise les lieux sur une carte, affiche un portrait d’ambiance lisible, et protège les actions d’écriture par authentification.
 
----
-
-## Prérequis
-
-- **Node.js** v18 ou supérieur
-- **npm** v9 ou supérieur
-- **MongoDB Atlas** — un cluster gratuit suffit (M0)
-- **Phyphox** — application mobile pour la collecte sonore (iOS / Android)
-- **Postman** — pour tester les endpoints manuellement
+Les lectures de l’ambiance sont publiques. Les écritures, comme la soumission d’une observation, nécessitent une authentification.
 
 ---
 
-## Installation
+## 1. Description du projet
+
+Ambiance API est une application web qui collecte et expose des données d’ambiance sonore pour différents lieux. La phase 2 ajoute un client React permettant de visualiser ces données sur une carte, de consulter le portrait détaillé d’un lieu, de soumettre des observations authentifiées et de gérer un espace compte.
+
+Le client React consomme l’API Express de la phase 1. Les lectures sont publiques, tandis que les écritures et les actions personnalisées nécessitent une authentification.
+
+---
+
+## 2. Prérequis
+
+Avant de lancer le projet, il faut avoir installé :
+
+- Node.js ;
+- npm ;
+- Git ;
+- un navigateur web ;
+- MongoDB Atlas ou une base MongoDB accessible ;
+- Postman pour tester les endpoints protégés.
+
+Le backend Express de la phase 1 doit être fonctionnel, car le client React consomme les endpoints de cette API.
+
+---
+
+## 3. Technologies utilisées
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- JSON Web Token
+- bcryptjs
+- express-validator
+- dotenv
+- cors
+
+### Frontend
+
+- React
+- Vite
+- React Router
+- Leaflet
+- React Leaflet
+- Recharts
+- CSS personnalisé
+
+---
+
+## 4. Structure du projet
+
+```text
+ift3225-ambiance-api/
+│
+├── src/
+│   ├── app.js
+│   ├── index.js
+│   ├── config/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── models/
+│   ├── routes/
+│   └── utils/
+│
+├── scripts/
+│
+├── client/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── styles/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   └── package.json
+│
+├── Endopoints_phase2/
+├── .env.example
+├── package.json
+└── README.md
+```
+
+---
+
+## 5. Configuration des variables d’environnement
+
+Le projet utilise des variables d’environnement pour configurer le backend, la base de données, phyphox, la clé API et l’authentification JWT.
+
+Les fichiers `.env` contiennent des informations sensibles. Ils ne doivent pas être publiés sur GitHub.
+
+---
+
+## 6. Fichier `.env.example` du backend
+
+Créer un fichier `.env.example` à la racine du projet avec le contenu suivant :
+
+```env
+PORT=3000
+MONGODB_URI=mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/DB_NAME
+API_BASE_URL=http://localhost:3000/api
+API_KEY=your_api_key_here
+PHYPOX_URL=http://your_phyphox_ip:8080
+PHYPOX_BUFFER=dB
+COLLECTION_LOCATION=maison-test
+BRIDGE_INTERVAL_MS=5000
+BRIDGE_DURATION_MINUTES=5
+JWT_SECRET=your_jwt_secret_here
+```
+
+Pour utiliser le projet localement, copier ce fichier vers `.env` :
+
+```bash
+copy .env.example .env
+```
+
+Puis remplir les vraies valeurs dans `.env`.
+
+---
+
+## 7. Fichier `client/.env.example`
+
+Créer un fichier `.env.example` dans le dossier `client` avec le contenu suivant :
+
+```env
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+Pour utiliser le client React localement, copier ce fichier vers `client/.env` :
+
+```bash
+cd client
+copy .env.example .env
+```
+
+---
+
+## 8. Installation du backend
+
+À la racine du projet :
 
 ```bash
 npm install
 ```
 
-Copier le fichier d'environnement et remplir les valeurs :
+---
+
+## 9. Lancement du backend
+
+À la racine du projet :
 
 ```bash
-cp .env.example .env
+npm run dev
 ```
 
-Insérer les données de démonstration :
+L’API est disponible à l’adresse :
+
+```text
+http://localhost:3000/api
+```
+
+---
+
+## 10. Installation du client React
+
+Aller dans le dossier `client` :
 
 ```bash
-npm run seed
+cd client
+npm install
 ```
 
-Démarrer le serveur :
+---
+
+## 11. Lancement du client React
+
+Dans le dossier `client` :
 
 ```bash
-npm run dev   # développement (nodemon)
-npm start     # production
+npm run dev
 ```
 
-Le serveur tourne par défaut sur `http://localhost:3000`.
+L’application React est disponible à l’adresse :
 
----
-
-## Variables d'environnement
-
-| Variable      | Description                          | Exemple                                      |
-| ------------- | ------------------------------------ | -------------------------------------------- |
-| `PORT`        | Port du serveur                      | `3000`                                       |
-| `MONGODB_URI` | URI de connexion MongoDB Atlas       | `mongodb+srv://user:pass@cluster/ift3225...` |
-
----
-
-## Authentification
-
-Les endpoints d'écriture sont protégés par une clé API transmise dans l'en-tête HTTP :
-
-```
-x-api-key: <votre_clé_api>
-```
-
-La clé API est générée automatiquement lors de la création d'un appareil (`POST /api/devices`). Le script `npm run seed` affiche une clé de test dans la console.
-
-| Situation       | Code HTTP |
-| --------------- | --------: |
-| Clé API absente |     `401` |
-| Clé API invalide |    `403` |
-| Clé API valide  | Autorisé  |
-
----
-
-## Endpoints
-
-### Appareils
-
-| Méthode | Endpoint        | Auth | Description                         |
-| ------- | --------------- | ---- | ----------------------------------- |
-| `POST`  | `/api/devices`  | Non  | Créer un appareil et obtenir une clé API |
-| `GET`   | `/api/devices`  | Non  | Lister tous les appareils (sans clé API) |
-
-#### POST /api/devices
-
-```json
-{
-  "name": "iPhone de collecte",
-  "location": "bibliotheque-udem"
-}
-```
-
-Réponse `201` :
-
-```json
-{
-  "success": true,
-  "data": {
-    "id": "...",
-    "name": "iPhone de collecte",
-    "location": "bibliotheque-udem",
-    "apiKey": "abc123..."
-  }
-}
+```text
+http://localhost:5173
 ```
 
 ---
 
-### Mesures sonores
+## 12. Données collectées pour la phase 2
 
-| Méthode | Endpoint              | Auth | Description                         |
-| ------- | --------------------- | ---- | ----------------------------------- |
-| `POST`  | `/api/measurements`   | Oui  | Enregistrer une mesure sonore       |
-| `GET`   | `/api/measurements`   | Non  | Consulter les mesures (avec filtres) |
+La phase 2 utilise de nouvelles mesures réparties sur trois lieux différents :
 
-#### POST /api/measurements
-
-En-tête requis : `x-api-key: <clé>`
-
-```json
-{
-  "type": "sound_level",
-  "value": 55.4,
-  "unit": "dB",
-  "location": "bibliotheque-udem",
-  "timestamp": "2026-05-27T09:30:00.000Z"
-}
+```text
+maison-test
+mcdonald
+bibliotheque-udem
 ```
 
-#### GET /api/measurements
+Chaque lieu possède :
 
-Paramètres de filtre optionnels :
+- un nom ;
+- un slug ;
+- une description ;
+- une adresse ou indication générale ;
+- une latitude ;
+- une longitude ;
+- des mesures sonores associées.
 
-| Paramètre  | Type     | Description                    |
-| ---------- | -------- | ------------------------------ |
-| `location` | string   | Filtrer par lieu               |
-| `type`     | string   | Filtrer par type (`sound_level`) |
-| `from`     | ISO 8601 | Date de début                  |
-| `to`       | ISO 8601 | Date de fin                    |
-| `limit`    | int      | Nombre max de résultats (≤ 500) |
+Ces données alimentent la carte, les badges d’ambiance, les graphiques d’historique et les créneaux calmes.
 
-Exemple :
+---
 
+## 13. Application cliente publique
+
+La partie publique de l’application React permet de consulter l’ambiance sans authentification.
+
+Elle contient :
+
+- une carte interactive ;
+- des marqueurs positionnés avec les coordonnées des lieux ;
+- un badge de classification sur les lieux ;
+- un accès au portrait détaillé d’un lieu ;
+- une page détail avec classification, historique et créneaux calmes ;
+- une gestion explicite des états de chargement, d’erreur et de données vides.
+
+Les appels à l’API sont isolés dans une couche client située dans :
+
+```text
+client/src/api/
 ```
-GET /api/measurements?location=bibliotheque-udem&limit=50
+
+Cette organisation permet de séparer la consommation de l’API de l’interface React.
+
+---
+
+## 14. Vue carte
+
+La vue carte affiche les lieux collectés à partir de leurs coordonnées géographiques.
+
+Chaque marqueur représente un lieu et affiche la classification courante renvoyée par l’API.
+
+Un clic sur un lieu permet d’accéder à son portrait d’ambiance détaillé.
+
+La carte reste lisible même lorsqu’un lieu n’a pas de mesure récente. Dans ce cas, l’ambiance peut être indiquée comme inconnue, mais le lieu reste visible.
+
+---
+
+## 15. Vue détaillée d’un lieu
+
+La page détail d’un lieu affiche :
+
+- le nom du lieu ;
+- l’adresse ou indication générale ;
+- le badge de classification fourni par l’API ;
+- la moyenne sonore récente ;
+- l’état de fraîcheur des données ;
+- les échelles de classification exposées par l’API ;
+- le graphe d’historique ;
+- les créneaux calmes ;
+- un résumé interprété par l’API ;
+- un bouton pour ajouter ou retirer le lieu des favoris ;
+- un formulaire de soumission d’observation pour les utilisateurs connectés.
+
+---
+
+## 16. Classification d’ambiance
+
+La classification est calculée côté serveur. Le client React affiche uniquement les informations retournées par l’API.
+
+Les niveaux utilisés sont :
+
+```text
+calm      → Calme
+moderate  → Modéré
+active    → Animé
+unknown   → Inconnue
+```
+
+Pour les valeurs phyphox relatives négatives, l’échelle utilisée est :
+
+```text
+Calme   : valeur <= -55
+Modéré  : valeur <= -35
+Animé   : valeur > -35
+```
+
+Pour les valeurs positives classiques, l’échelle utilisée est :
+
+```text
+Calme   : valeur <= 45
+Modéré  : valeur <= 65
+Animé   : valeur > 65
+```
+
+Le client React ne recalcule pas l’ambiance. Il affiche le badge, la description et les échelles fournis par l’API.
+
+---
+
+## 17. Fraîcheur des données
+
+L’application utilise un seuil de fraîcheur de 30 minutes.
+
+Si un lieu possède une mesure récente dans les 30 dernières minutes, l’ambiance actuelle est affichée.
+
+Si aucune mesure récente n’est disponible, le lieu reste visible sur la carte, mais sa classification peut devenir :
+
+```text
+Inconnue
+```
+
+Ce choix permet de garder l’interface lisible même lorsque la collecte n’est pas active en continu.
+
+---
+
+## 18. Authentification et espace compte
+
+L’application permet à un usager de :
+
+- créer un compte ;
+- se connecter ;
+- se déconnecter ;
+- consulter son espace compte ;
+- soumettre une observation ;
+- consulter ses observations ;
+- consulter les lieux où il a soumis des observations ;
+- ajouter un lieu aux favoris ;
+- retirer un lieu des favoris.
+
+L’interface reflète l’état connecté ou déconnecté :
+
+- les lectures publiques restent accessibles sans connexion ;
+- les actions protégées sont affichées seulement lorsque l’utilisateur est connecté ;
+- les écritures envoient un justificatif d’authentification avec le token JWT.
+
+Les routes protégées utilisent l’en-tête suivant :
+
+```text
+Authorization: Bearer TOKEN
 ```
 
 ---
 
-### Observations environnementales
+## 19. Observations et auteur
 
-| Méthode | Endpoint             | Auth | Description                              |
-| ------- | -------------------- | ---- | ---------------------------------------- |
-| `POST`  | `/api/observations`  | Oui  | Enregistrer une observation              |
-| `GET`   | `/api/observations`  | Non  | Consulter les observations (avec filtres) |
+Chaque observation soumise par un utilisateur connecté est associée à son auteur.
 
-#### POST /api/observations
+Cela permet de construire :
 
-En-tête requis : `x-api-key: <clé>`
+- le récapitulatif des contributions ;
+- la liste des observations de l’utilisateur ;
+- la notion de ses lieux ;
+- l’espace compte personnalisé.
 
-```json
-{
-  "location": "bibliotheque-udem",
-  "proximity": "near",
-  "vibe": "busy",
-  "notes": "Plusieurs personnes discutent proche du téléphone.",
-  "timestamp": "2026-05-27T12:00:00.000Z"
-}
-```
-
-Valeurs acceptées pour `proximity` : `near`, `medium`, `far`
-
-Valeurs acceptées pour `vibe` : `calm`, `normal`, `busy`, `noisy`
-
-#### GET /api/observations
-
-Paramètres de filtre optionnels :
-
-| Paramètre   | Type     | Description                          |
-| ----------- | -------- | ------------------------------------ |
-| `location`  | string   | Filtrer par lieu                     |
-| `proximity` | string   | Filtrer par proximité                |
-| `vibe`      | string   | Filtrer par vibe                     |
-| `from`      | ISO 8601 | Date de début                        |
-| `to`        | ISO 8601 | Date de fin                          |
-| `limit`     | int      | Nombre max de résultats (≤ 500)      |
+Le modèle d’observation a donc été étendu avec un champ auteur.
 
 ---
 
-### Ambiance sémantique
+## 20. Gestion des favoris
 
-Ces endpoints agrègent mesures et observations pour répondre à des questions concrètes. Aucune authentification requise.
+Un utilisateur connecté peut ajouter ou retirer un lieu de ses favoris.
 
-| Méthode | Endpoint                                  | Description                                 |
-| ------- | ----------------------------------------- | ------------------------------------------- |
-| `GET`   | `/api/ambiance/:location/summary`         | Résumé de l'ambiance des 30 dernières minutes |
-| `GET`   | `/api/ambiance/:location/history`         | Évolution sonore par tranches de 10 minutes |
-| `GET`   | `/api/ambiance/:location/quiet-hours`     | Les 3 périodes les plus calmes du lieu      |
+Les favoris sont liés au compte utilisateur.
 
-#### GET /api/ambiance/:location/summary
+Ils sont accessibles dans la page :
 
-```
-GET /api/ambiance/bibliotheque-udem/summary
+```text
+Mon compte
 ```
 
-Réponse `200` :
+et aussi depuis la page détail d’un lieu.
+
+---
+
+## 21. Principaux endpoints API
+
+### Lieux
+
+```http
+GET /api/locations
+GET /api/locations/:slug
+```
+
+Ces routes retournent les lieux, leurs coordonnées et leur ambiance courante.
+
+### Ambiance
+
+```http
+GET /api/ambiance/:slug/summary
+GET /api/ambiance/:slug/history
+GET /api/ambiance/:slug/quiet-hours
+```
+
+Ces routes retournent le résumé d’ambiance, l’historique et les créneaux calmes d’un lieu.
+
+### Mesures
+
+```http
+POST /api/measurements
+```
+
+Cette route permet d’ajouter une mesure sonore.
+
+Elle nécessite une clé API.
+
+Exemple d’en-tête :
+
+```text
+x-api-key: VOTRE_CLE_API
+```
+
+Exemple de body :
 
 ```json
 {
-  "success": true,
-  "data": {
-    "location": "bibliotheque-udem",
-    "averageSoundLevel": 48.1,
-    "unit": "dB",
-    "vibe": "normal",
-    "proximity": "medium",
-    "classification": "normal",
-    "window": "last_30_minutes"
-  }
+  "location": "maison-test",
+  "value": -65,
+  "unit": "dB"
 }
 ```
 
-#### GET /api/ambiance/:location/history
+### Authentification
 
-Paramètre optionnel `last` : durée à analyser (ex. `30m`, `3h`). Défaut : `3h`.
-
+```http
+POST /api/auth/register
+POST /api/auth/login
+GET /api/auth/me
 ```
-GET /api/ambiance/bibliotheque-udem/history?last=3h
+
+Ces routes permettent de créer un compte, se connecter et récupérer l’utilisateur connecté.
+
+### Observations
+
+```http
+GET /api/observations
+POST /api/observations
 ```
 
-Réponse `200` :
+La lecture des observations est publique.
+
+La création d’une observation nécessite un utilisateur connecté.
+
+Exemple de body :
 
 ```json
 {
-  "success": true,
-  "data": {
-    "location": "bibliotheque-udem",
-    "last": "3h",
-    "interval": "10min",
-    "points": [
-      {
-        "time": "2026-05-27T09:30:00.000Z",
-        "averageSoundLevel": 42.5,
-        "classification": "calm"
-      }
-    ]
-  }
+  "location": "maison-test",
+  "proximity": "medium",
+  "vibe": "calm",
+  "notes": "Observation soumise depuis l’interface React."
 }
 ```
 
-#### GET /api/ambiance/:location/quiet-hours
+Valeurs attendues pour `proximity` :
 
-```
-GET /api/ambiance/bibliotheque-udem/quiet-hours
+```text
+near
+medium
+far
 ```
 
-Réponse `200` :
+Valeurs attendues pour `vibe` :
+
+```text
+calm
+normal
+busy
+noisy
+```
+
+### Espace compte
+
+```http
+GET /api/account/observations
+GET /api/account/places
+GET /api/account/favorites
+POST /api/account/favorites/:slug
+DELETE /api/account/favorites/:slug
+```
+
+Ces routes nécessitent un token JWT.
+
+Elles permettent de consulter les observations de l’utilisateur, ses lieux et ses favoris.
+
+---
+
+## 22. Comment tester les actions protégées
+
+### Depuis l’interface React
+
+1. Lancer le backend.
+2. Lancer le client React.
+3. Ouvrir l’application dans le navigateur.
+4. Aller à la page d’inscription.
+5. Créer un compte.
+6. Se connecter.
+7. Ouvrir la page détail d’un lieu.
+8. Soumettre une observation.
+9. Ajouter un lieu aux favoris.
+10. Aller dans la page `Mon compte`.
+11. Vérifier les sections :
+    - identité ;
+    - mes observations ;
+    - mes lieux ;
+    - mes favoris.
+
+### Depuis Postman
+
+Se connecter avec :
+
+```http
+POST /api/auth/login
+```
+
+Exemple de body :
 
 ```json
 {
-  "success": true,
-  "data": {
-    "location": "bibliotheque-udem",
-    "quietHours": [
-      {
-        "period": "09:00-10:00",
-        "averageSoundLevel": 42.5,
-        "classification": "calm"
-      }
-    ]
-  }
+  "email": "utilisateur@example.com",
+  "password": "Password123"
 }
+```
+
+Copier le token retourné.
+
+Dans les routes protégées, utiliser :
+
+```text
+Authorization: Bearer TOKEN
+```
+
+Exemple de soumission d’observation :
+
+```http
+POST /api/observations
+```
+
+Body :
+
+```json
+{
+  "location": "maison-test",
+  "proximity": "medium",
+  "vibe": "calm",
+  "notes": "Observation de test avec utilisateur connecté."
+}
+```
+
+Exemple de consultation de l’espace compte :
+
+```http
+GET /api/account/observations
+GET /api/account/places
+GET /api/account/favorites
 ```
 
 ---
 
-## Format des réponses
+## 23. Tests effectués
 
-### Succès
+Les endpoints suivants ont été testés :
 
-```json
-{
-  "success": true,
-  "data": {}
-}
+```text
+GET /api/locations
+GET /api/ambiance/:slug/summary
+GET /api/ambiance/:slug/history
+GET /api/ambiance/:slug/quiet-hours
+POST /api/measurements
+POST /api/observations avec token
+GET /api/account/observations
+GET /api/account/places
+GET /api/account/favorites
+POST /api/account/favorites/:slug
+DELETE /api/account/favorites/:slug
 ```
 
-### Erreur
+Des captures de vérification sont placées dans le dossier :
 
-```json
-{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Le champ location est obligatoire."
-  }
-}
-```
-
-### Codes HTTP
-
-| Code  | Signification             |
-| ----: | ------------------------- |
-| `200` | Requête réussie           |
-| `201` | Ressource créée           |
-| `400` | Données invalides         |
-| `401` | Clé API absente           |
-| `403` | Clé API invalide          |
-| `404` | Ressource introuvable     |
-| `500` | Erreur interne du serveur |
-
----
-
-## Structure du projet
-
-```
-src/
-  index.js                  # Point d'entrée
-  app.js                    # Configuration Express
-  config/db.js              # Connexion MongoDB
-  models/                   # Schémas Mongoose
-  controllers/              # Logique métier
-  routes/                   # Définition des endpoints
-  middlewares/              # Auth, validation, erreurs
-  utils/generateApiKey.js   # Générateur de clé API
-scripts/
-  seed.js                   # Données de démonstration
-  bridge.js                 # Collecte Phyphox → API
-docs/
-  protocole.md              # Protocole API (Tâche 2)
-  collecte-plan.md          # Plan de collecte (Tâche 1)
-manual_observations.csv     # Observations manuelles de secours
+```text
+Endopoints_phase2/
 ```
 
 ---
 
-## Collecte des données (bridge Phyphox)
+## 24. Gestion des états dans React
 
-Le script `scripts/bridge.js` achemine les mesures sonores du téléphone vers l'API. Il interroge l'API REST de Phyphox à intervalle régulier et envoie chaque valeur via `POST /api/measurements`.
+L’interface React gère explicitement les états suivants :
 
-**Côté téléphone :**
+- chargement ;
+- erreur ;
+- données vides ;
+- utilisateur connecté ;
+- utilisateur déconnecté ;
+- action protégée non disponible ;
+- message de succès après une action.
 
-1. Ouvrir l'expérience « Intensité sonore » dans Phyphox
-2. Menu (⋮) → « Activer l'accès distant »
-3. Noter l'adresse affichée (ex. `http://192.168.1.42:80`) — le téléphone et l'ordinateur doivent être sur le même réseau Wi-Fi
-4. Démarrer la mesure (▶)
+Ces états permettent de garder l’application lisible dans toutes les situations.
 
-**Côté ordinateur :**
+---
 
-Renseigner `PHYPHOX_URL` et `API_KEY` dans `.env` (voir `.env.example`), puis :
+## 25. Mise à jour de l’infrastructure
+
+La phase 2 a nécessité des mises à jour de l’infrastructure de la phase 1.
+
+Les ajouts principaux sont :
+
+- coordonnées des lieux avec latitude et longitude ;
+- modèle de lieu exposé par l’API ;
+- classification d’ambiance exposée par l’API ;
+- échelles de classification exposées par l’API ;
+- auteur associé aux observations ;
+- routes d’authentification ;
+- routes d’espace compte ;
+- gestion des favoris ;
+- protection des écritures sensibles.
+
+Les lectures publiques de la phase 1 restent accessibles.
+
+La collecte des mesures continue de fonctionner.
+
+---
+
+## 26. Build React
+
+Pour vérifier que l’application React compile correctement :
 
 ```bash
-npm run bridge
+cd client
+npm run build
 ```
 
-Le buffer lu par défaut est `dB`. Si aucune valeur n'est reçue, vérifier le nom exact du buffer en ouvrant `http://<ip-telephone>:80/config` dans un navigateur et ajuster `PHYPHOX_BUFFER`.
-
-**Fallback manuel :** si la collecte automatique échoue, saisir les observations dans `manual_observations.csv`, qui peut ensuite être importé via le script seed ou rejoué manuellement.
+Le build doit se terminer sans erreur bloquante.
 
 ---
 
-## Tests avec Postman
+## 27. Branche Git utilisée
 
-1. Lancer le serveur (`npm run dev`) et peupler la base (`npm run seed`)
-2. La console affiche une clé API de test — la copier
-3. Dans Postman, créer une collection et tester dans l'ordre suivant :
+Le développement de la phase 2 a été effectué sur la branche :
 
-**Créer un appareil :**
-```
-POST http://localhost:3000/api/devices
-Body (JSON) : { "name": "iPhone de collecte", "location": "bibliotheque-udem" }
-→ Réponse 201 + apiKey dans la réponse
-```
-
-**Envoyer une mesure (avec clé API) :**
-```
-POST http://localhost:3000/api/measurements
-Header : x-api-key: <clé copiée>
-Body (JSON) : { "type": "sound_level", "value": 55.4, "unit": "dB", "location": "bibliotheque-udem", "timestamp": "2026-05-27T09:30:00.000Z" }
-→ Réponse 201
-```
-
-**Tester l'authentification :**
-```
-POST http://localhost:3000/api/measurements  (sans en-tête x-api-key)
-→ Réponse 401
-
-POST http://localhost:3000/api/measurements  (x-api-key: cle-invalide)
-→ Réponse 403
-```
-
-**Consulter l'ambiance :**
-```
-GET http://localhost:3000/api/ambiance/bibliotheque-udem/summary
-GET http://localhost:3000/api/ambiance/bibliotheque-udem/history?last=3h
-GET http://localhost:3000/api/ambiance/bibliotheque-udem/quiet-hours
-→ Réponse 200 avec données agrégées
+```text
+rachida-phase2
 ```
 
 ---
 
-## Données de démonstration
+## 28. Remarques importantes
 
-Le script seed insère :
+- Les secrets ne sont pas publiés dans le dépôt.
+- Les fichiers `.env` sont ignorés par Git.
+- Les fichiers `.env.example` contiennent seulement des valeurs fictives.
+- Les lectures publiques ne nécessitent pas de connexion.
+- Les écritures protégées nécessitent une authentification.
+- La classification est calculée côté serveur.
+- Le client React ne recalcule pas l’ambiance.
+- Les observations sont liées à leur auteur.
+- Les favoris sont liés au compte utilisateur connecté.
+- Les coordonnées permettent l’affichage des lieux sur la carte.
 
-- 2 appareils (matin et midi) sur `bibliotheque-udem`
-- 8 mesures sonores réparties sur 3 sessions
-- 9 observations environnementales issues du fichier CSV
+---
 
-Les clés API générées sont affichées dans la console après `npm run seed`.
+## 29. Commandes utiles
+
+Installer le backend :
+
+```bash
+npm install
+```
+
+Lancer le backend :
+
+```bash
+npm run dev
+```
+
+Installer le client :
+
+```bash
+cd client
+npm install
+```
+
+Lancer le client :
+
+```bash
+npm run dev
+```
+
+Compiler le client :
+
+```bash
+cd client
+npm run build
+```
