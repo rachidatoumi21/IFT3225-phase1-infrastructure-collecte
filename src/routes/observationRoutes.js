@@ -6,14 +6,14 @@ const {
   getObservations
 } = require("../controllers/observationController");
 
-const requireApiKey = require("../middlewares/authMiddleware");
+const { protectUser } = require("../middlewares/userAuthMiddleware");
 const validateRequest = require("../middlewares/validateRequest");
 
 const router = express.Router();
 
 router.post(
   "/",
-  requireApiKey,
+  protectUser,
   [
     body("location")
       .notEmpty()
@@ -33,6 +33,7 @@ router.post(
       .withMessage("Le champ notes doit être une chaîne de caractères"),
 
     body("timestamp")
+      .optional()
       .isISO8601()
       .withMessage("Le champ timestamp doit être une date ISO 8601")
   ],

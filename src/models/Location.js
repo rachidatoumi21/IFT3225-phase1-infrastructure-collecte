@@ -4,47 +4,43 @@ const locationSchema = new mongoose.Schema(
   {
     slug: {
       type: String,
-      required: [true, "L'identifiant du lieu est obligatoire"],
+      required: true,
       unique: true,
-      lowercase: true,
       trim: true
     },
 
     name: {
       type: String,
-      required: [true, "Le nom du lieu est obligatoire"],
+      required: true,
       trim: true
     },
 
     description: {
       type: String,
-      default: ""
+      required: true,
+      trim: true
     },
 
     address: {
       type: String,
-      default: ""
+      required: true,
+      trim: true
     },
 
     latitude: {
       type: Number,
-      required: [true, "La latitude est obligatoire"]
+      required: true
     },
 
     longitude: {
       type: Number,
-      required: [true, "La longitude est obligatoire"]
+      required: true
     },
 
     type: {
       type: String,
-      enum: ["residential", "restaurant", "library", "other"],
-      default: "other"
-    },
-
-    isActive: {
-      type: Boolean,
-      default: true
+      required: true,
+      trim: true
     }
   },
   {

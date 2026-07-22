@@ -1,0 +1,251 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  getMyFavorites,
+  getMyObservations,
+  getMyPlaces,
+  removeFavoriteLocation
+} from "../api/accountApi";
+import LoadingState from "../components/common/LoadingState";
+import ErrorState from "../components/common/ErrorState";
+import EmptyState from "../components/common/EmptyState";
+import { useAuth } from "../context/AuthContext";
+import { formatDateTime } from "../utils/formatDate";
+
+
+function formatProximity(proximity) {
+  const labels = {
+    near: "Proche",
+    medium: "Moyenne",
+    far: "Faible"
+  };
+
+  return labels[proximity] || proximity || "Non disponible";
+}
+
+function formatVibe(vibe) {
+  const labels = {
+    calm: "Calme",
+    normal: "Normale",
+    busy: "Occupée",
+    noisy: "Bruyante"
+  };
+
+  return labels[vibe] || vibe || "Non disponible";
+}
+
+function AccountPage() {
+  const { user, token, isAuthenticated } = useAuth();
+
+  const [observations, setObservations] = useState([]);
+  const [places, setPlaces] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [actionMessage, setActionMessage] = useState("");
+
+  useEffect(() => {
+    async function loadAccountData() {
+      if (!isAuthenticated || !token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setErrorMessage("");
+
+        const [observationsResponse, placesResponse, favoritesResponse] =
+          await Promise.all([
+            getMyObservations(token),
+            getMyPlaces(token),
+            getMyFavorites(token)
+          ]);
+
+        setObservations(observationsResponse.data || []);
+        setPlaces(placesResponse.data || []);
+        setFavorites(favoritesResponse.data || []);
+      } catch (error) {
+        setErrorMessage(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAccountData();
+  }, [isAuthenticated, token]);
+
+  async function handleRemoveFavorite(slug) {
+    try {
+      setActionMessage("");
+
+      await removeFavoriteLocation(slug, token);
+
+      setFavorites((currentFavorites) =>
+        currentFavorites.filter((favorite) => favorite.slug !== slug)
+      );
+
+      setActionMessage("Le lieu a été retiré de vos favoris.");
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="page">
+        <section className="account-card">
+          <h2>Mon compte</h2>
+          <p>
+            Vous devez être connecté pour consulter votre espace compte, vos
+            observations, vos lieux et vos favoris.
+          </p>
+
+          <Link className="primary-link" to="/login">
+            Se connecter
+          </Link>
+        </section>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return <LoadingState message="Chargement de votre espace compte..." />;
+  }
+
+  if (errorMessage) {
+    return <ErrorState message={errorMessage} />;
+  }
+
+  return (
+    <div className="page">
+      <section className="account-card">
+        <p className="eyebrow">Espace compte</p>
+        <h2>Mon compte</h2>
+
+        <div className="account-identity">
+          <div>
+            <span className="summary-label">Nom</span>
+            <strong>{user?.name || "Utilisateur"}</strong>
+          </div>
+
+          <div>
+            <span className="summary-label">Courriel</span>
+            <strong>{user?.email || "Non disponible"}</strong>
+          </div>
+
+          <div>
+            <span className="summary-label">Rôle</span>
+            <strong>{user?.role || "user"}</strong>
+          </div>
+        </div>
+
+        {actionMessage && <p className="success-message">{actionMessage}</p>}
+      </section>
+
+      <section className="account-section">
+        <div className="section-heading">
+          <h2>Mes observations</h2>
+          <p>
+            Cette section liste les observations soumises avec votre compte.
+          </p>
+        </div>
+
+        {observations.length === 0 ? (
+          <EmptyState message="Vous n’avez pas encore soumis d’observation." />
+        ) : (
+          <div className="account-list">
+            {observations.map((observation) => (
+              <article className="account-list-item" key={observation._id}>
+                <div>
+                  <h3>{observation.location}</h3>
+                  <p>{observation.notes || "Aucune note ajoutée."}</p>
+                </div>
+
+                <div className="account-meta">
+                  <span>Proximité : {formatProximity(observation.proximity)}</span>
+                  <span>Ambiance : {formatVibe(observation.vibe)}</span>
+                  <span>{formatDateTime(observation.timestamp)}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="account-section">
+        <div className="section-heading">
+          <h2>Mes lieux</h2>
+          <p>
+            Ces lieux correspondent aux endroits où vous avez soumis au moins
+            une observation.
+          </p>
+        </div>
+
+        {places.length === 0 ? (
+          <EmptyState message="Aucun lieu n’est encore associé à vos observations." />
+        ) : (
+          <div className="account-grid">
+            {places.map((place) => (
+              <article className="account-place-card" key={place.slug}>
+                <h3>{place.name}</h3>
+                <p>{place.address || "Adresse non disponible"}</p>
+                <p>
+                  {place.observationsCount} observation
+                  {place.observationsCount > 1 ? "s" : ""}
+                </p>
+                <p>
+                  Dernière observation :{" "}
+                  {formatDateTime(place.latestObservationAt)}
+                </p>
+
+                <Link className="primary-link" to={`/lieux/${place.slug}`}>
+                  Voir le portrait
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="account-section">
+        <div className="section-heading">
+          <h2>Mes favoris</h2>
+          <p>
+            Retrouvez ici les lieux que vous avez ajoutés à vos favoris.
+          </p>
+        </div>
+
+        {favorites.length === 0 ? (
+          <EmptyState message="Vous n’avez pas encore ajouté de lieu favori." />
+        ) : (
+          <div className="account-grid">
+            {favorites.map((favorite) => (
+              <article className="account-place-card" key={favorite.slug}>
+                <h3>{favorite.name}</h3>
+                <p>{favorite.address || "Adresse non disponible"}</p>
+
+                <div className="account-actions">
+                  <Link className="primary-link" to={`/lieux/${favorite.slug}`}>
+                    Voir le portrait
+                  </Link>
+
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    onClick={() => handleRemoveFavorite(favorite.slug)}
+                  >
+                    Retirer des favoris
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+export default AccountPage;

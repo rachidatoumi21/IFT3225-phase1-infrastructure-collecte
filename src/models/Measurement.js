@@ -8,9 +8,9 @@ const measurementSchema = new mongoose.Schema(
       enum: ["sound_level"]
     },
     value: {
-  type: Number,
-  required: [true, "La valeur sonore est obligatoire"]
-},
+      type: Number,
+      required: [true, "La valeur de mesure est obligatoire"],
+    },
     unit: {
       type: String,
       required: [true, "L'unité est obligatoire"],

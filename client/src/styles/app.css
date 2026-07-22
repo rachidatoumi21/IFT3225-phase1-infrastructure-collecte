@@ -1,0 +1,797 @@
+/* Base générale */
+
+:root {
+  font-family: Arial, system-ui, sans-serif;
+  color: #172033;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f4f7fb;
+}
+
+a {
+  color: inherit;
+}
+
+/* Structure générale de l’application  */
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 40px;
+  background: #ffffff;
+  border-bottom: 1px solid #dbe4f0;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.app-header p {
+  margin: 4px 0 0;
+  color: #667085;
+}
+
+.app-nav a {
+  font-weight: 700;
+  text-decoration: none;
+  color: #2563eb;
+}
+
+.app-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 56px;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Blocs principaux des pages */
+.hero,
+.detail-hero,
+.map-section,
+.locations-section,
+.chart-card,
+.quiet-card,
+.scale-card,
+.raw-summary {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.hero h2,
+.detail-hero h2 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.hero p,
+.detail-hero p {
+  max-width: 760px;
+  color: #667085;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-weight: 800;
+  color: #2563eb;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin: 0 0 6px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #667085;
+}
+
+/* États : chargement, erreur, vide */
+.state-box {
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+}
+
+.loading-state {
+  color: #2563eb;
+}
+
+.error-state {
+  color: #991b1b;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.empty-state {
+  color: #475467;
+}
+
+/* Carte Leaflet */
+.ambiance-map {
+  height: 460px;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #dbe4f0;
+}
+
+.map-note {
+  margin: 14px 0 0;
+  color: #667085;
+  font-size: 14px;
+}
+
+.map-marker {
+  min-width: 100px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  border: 2px solid #ffffff;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.22);
+}
+
+.marker-stale {
+  opacity: 0.72;
+}
+
+/* Badges d’ambiance */
+.ambiance-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+
+.badge-calm {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.badge-moderate {
+  background: #fef9c3;
+  color: #854d0e;
+  border-color: #fde68a;
+}
+
+.badge-active {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.badge-unknown {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+/* Cartes de résumé des lieux */
+.location-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.location-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.location-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.location-card h3 {
+  margin: 0 0 4px;
+}
+
+.location-card p {
+  margin: 0;
+  color: #667085;
+}
+
+.location-address {
+  font-size: 14px;
+  color: #667085;
+}
+
+.location-description {
+  min-height: 48px;
+}
+
+.location-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.location-stats div {
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.stat-label {
+  display: block;
+  color: #667085;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.location-stats strong {
+  color: #172033;
+}
+
+/* Liens et boutons */
+.primary-link,
+.back-link,
+.popup-link {
+  display: inline-flex;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-link {
+  color: #ffffff;
+}
+
+.leaflet-popup-content .popup-link {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background: #2563eb;
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 800;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.leaflet-popup-content .popup-link:hover {
+  background: #1d4ed8;
+  color: #ffffff !important;
+}
+
+.back-link {
+  background: #ffffff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+/* Page détaillée d’un lieu */
+.detail-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.detail-grid,
+.scale-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.scale-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.metric-card h3 {
+  margin: 0 0 12px;
+}
+
+.metric-card strong {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.metric-card p {
+  color: #667085;
+}
+
+/* Message de données anciennes */
+.stale-warning {
+  font-size: 14px;
+  color: #92400e !important;
+}
+
+.stale-panel {
+  padding: 16px 18px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 16px;
+  color: #92400e;
+  font-weight: 700;
+}
+
+/* Graphique historique */
+.chart-help {
+  color: #667085;
+  margin-top: -6px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+ /* Créneaux calmes */
+.quiet-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.quiet-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.quiet-list li:last-child {
+  border-bottom: none;
+}
+
+.quiet-count {
+  display: block;
+  color: #667085;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* Popup Leaflet */
+.popup-content {
+  min-width: 220px;
+}
+
+.popup-content h3 {
+  margin: 0 0 8px;
+}
+
+.popup-content p {
+  margin: 8px 0;
+}
+
+/* =========================================================
+   Résumé interprété par l’API
+   ========================================================= */
+
+.api-summary-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.api-summary-card h3 {
+  margin: 0 0 8px;
+}
+
+.summary-intro {
+  margin: 0 0 18px;
+  color: #667085;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.summary-item {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.summary-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.summary-item strong {
+  color: #172033;
+}
+
+/* Responsive mobile */
+@media (max-width: 900px) {
+  .app-header,
+  .detail-hero,
+  .favorite-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .location-grid,
+  .detail-grid,
+  .scale-grid,
+  .summary-grid,
+  .account-grid,
+  .account-identity,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .account-list-item {
+    flex-direction: column;
+  }
+
+  .app-main {
+    padding: 24px 16px;
+  }
+
+  .ambiance-map {
+    height: 380px;
+  }
+}
+
+/* Authentification React */
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.nav-user {
+  color: #475467;
+  font-weight: 700;
+}
+
+.nav-button,
+.primary-button {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.nav-button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.auth-card h2 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.auth-card p {
+  color: #667085;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-weight: 800;
+}
+
+.form-group input {
+  padding: 12px 14px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  font: inherit;
+}
+
+.form-group input:focus {
+  outline: 3px solid #bfdbfe;
+  border-color: #2563eb;
+}
+
+.primary-button {
+  width: fit-content;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.primary-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-error {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-weight: 700;
+}
+
+.auth-switch {
+  margin-top: 18px;
+}
+
+.auth-switch a {
+  color: #2563eb;
+  font-weight: 800;
+}
+
+/* Espace compte */
+
+.account-card,
+.account-section {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.account-card h2 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.account-card p {
+  color: #667085;
+}
+
+.account-identity {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.account-identity div {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.account-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.account-list-item h3 {
+  margin: 0 0 6px;
+}
+
+.account-list-item p {
+  margin: 0;
+  color: #667085;
+}
+
+.account-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+  font-size: 14px;
+  color: #475467;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.account-place-card {
+  padding: 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.account-place-card h3 {
+  margin: 0 0 8px;
+}
+
+.account-place-card p {
+  color: #667085;
+}
+
+.account-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  background: #ffffff;
+  color: #2563eb;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.success-message {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ecfdf3;
+  border: 1px solid #86efac;
+  color: #166534 !important;
+  font-weight: 800;
+}
+
+/* Bouton favori sur la page détail */
+
+.favorite-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.favorite-panel h3 {
+  margin: 0 0 6px;
+}
+
+.favorite-panel p {
+  margin: 0;
+  color: #667085;
+}
+
+/* Formulaire de soumission d’observation */
+
+.observation-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 20px 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.observation-card h3 {
+  margin: 0 0 6px;
+}
+
+.observation-card p {
+  color: #667085;
+}
+
+.observation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-group select,
+.form-group textarea {
+  padding: 12px 14px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  font: inherit;
+  background: #ffffff;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: 3px solid #bfdbfe;
+  border-color: #2563eb;
+}
+
+.form-group textarea {
+  resize: vertical;
+}

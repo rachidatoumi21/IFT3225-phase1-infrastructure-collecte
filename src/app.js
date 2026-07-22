@@ -8,9 +8,10 @@ const measurementRoutes = require("./routes/measurementRoutes");
 const observationRoutes = require("./routes/observationRoutes");
 const ambianceRoutes = require("./routes/ambianceRoutes");
 
-const errorMiddleware = require("./middlewares/errorMiddleware");   
+const errorMiddleware = require("./middlewares/errorMiddleware");
 const locationRoutes = require("./routes/locationRoutes");
-
+const authRoutes = require("./routes/authRoutes");
+const accountRoutes = require("./routes/accountRoutes");
 const app = express();
 
 app.use(helmet());
@@ -33,6 +34,8 @@ app.use("/api/measurements", measurementRoutes);
 app.use("/api/observations", observationRoutes);
 app.use("/api/ambiance", ambianceRoutes);
 app.use("/api/locations", locationRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/account", accountRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
