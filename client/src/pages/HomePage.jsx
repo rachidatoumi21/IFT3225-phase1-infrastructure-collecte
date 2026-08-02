@@ -5,6 +5,7 @@ import LocationSummaryCard from "../components/ambiance/LocationSummaryCard";
 import LoadingState from "../components/common/LoadingState";
 import ErrorState from "../components/common/ErrorState";
 import EmptyState from "../components/common/EmptyState";
+import QuietPlaceRecommendation from "../components/recommendations/QuietPlaceRecommendation";
 
 function HomePage() {
   const [locations, setLocations] = useState([]);
@@ -49,7 +50,7 @@ function HomePage() {
     <div className="page">
       <section className="hero">
         <div>
-          <p className="eyebrow">IFT3225 · Phase 2</p>
+          <p className="eyebrow">IFT3225 </p>
           <h2>Portrait public de l’ambiance des lieux</h2>
           <p>
             Cette interface consomme l’API de la phase 1 afin de rendre les
@@ -57,6 +58,8 @@ function HomePage() {
           </p>
         </div>
       </section>
+
+      <QuietPlaceRecommendation />
 
       <AmbianceMap locations={locations} />
 

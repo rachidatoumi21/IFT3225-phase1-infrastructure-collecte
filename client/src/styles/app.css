@@ -466,7 +466,8 @@ a {
 @media (max-width: 900px) {
   .app-header,
   .detail-hero,
-  .favorite-panel {
+  .favorite-panel,
+  .recommendation-card {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -483,6 +484,8 @@ a {
   .account-list-item {
     flex-direction: column;
   }
+
+  
 
   .app-main {
     padding: 24px 16px;
@@ -794,4 +797,42 @@ a {
 
 .form-group textarea {
   resize: vertical;
+}      
+
+/* Recommandation du meilleur lieu calme */
+
+.recommendation-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.recommendation-card h2 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.recommendation-card h3 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.recommendation-card p {
+  margin: 0;
+  color: #667085;
+  max-width: 760px;
+}
+
+.recommendation-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
 }
