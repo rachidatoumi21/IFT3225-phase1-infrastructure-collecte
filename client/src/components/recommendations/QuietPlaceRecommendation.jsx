@@ -1,34 +1,11 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getQuietPlaceRecommendation } from "../../api/recommendationsApi";
+import { useQuietPlaceRecommendation } from "../../hooks/useQuietPlaceRecommendation";
 import AmbianceBadge from "../ambiance/AmbianceBadge";
 import { formatNumber } from "../../utils/formatDate";
 
 function QuietPlaceRecommendation() {
-  const [recommendation, setRecommendation] = useState(null);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    async function loadRecommendation() {
-      try {
-        setLoading(true);
-        setErrorMessage("");
-
-        const response = await getQuietPlaceRecommendation();
-
-        setRecommendation(response.data || null);
-        setMessage(response.message || "");
-      } catch (error) {
-        setErrorMessage(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadRecommendation();
-  }, []);
+  const { recommendation, message, loading, errorMessage } =
+    useQuietPlaceRecommendation();
 
   if (loading) {
     return (

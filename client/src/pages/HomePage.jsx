@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { getLocations } from "../api/locationsApi";
+import { useLocations } from "../hooks/useLocations";
 import AmbianceMap from "../components/map/AmbianceMap";
 import LocationSummaryCard from "../components/ambiance/LocationSummaryCard";
 import LoadingState from "../components/common/LoadingState";
@@ -8,27 +7,7 @@ import EmptyState from "../components/common/EmptyState";
 import QuietPlaceRecommendation from "../components/recommendations/QuietPlaceRecommendation";
 
 function HomePage() {
-  const [locations, setLocations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    async function loadLocations() {
-      try {
-        setLoading(true);
-        setErrorMessage("");
-
-        const response = await getLocations();
-        setLocations(response.data || []);
-      } catch (error) {
-        setErrorMessage(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadLocations();
-  }, []);
+  const { locations, loading, errorMessage } = useLocations();
 
   if (loading) {
     return (
@@ -50,11 +29,11 @@ function HomePage() {
     <div className="page">
       <section className="hero">
         <div>
-          <p className="eyebrow">IFT3225 </p>
+          <p className="eyebrow">IFT3225 · Phase 3</p>
           <h2>Portrait public de l’ambiance des lieux</h2>
           <p>
-            Cette interface consomme l’API de la phase 1 afin de rendre les
-            données d’ambiance lisibles et actionnables pour un usager.
+            Cette interface consomme l’API afin de rendre les données
+            d’ambiance lisibles et actionnables pour un usager.
           </p>
         </div>
       </section>

@@ -1,17 +1,10 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  getMyFavorites,
-  getMyObservations,
-  getMyPlaces,
-  removeFavoriteLocation
-} from "../api/accountApi";
 import LoadingState from "../components/common/LoadingState";
 import ErrorState from "../components/common/ErrorState";
 import EmptyState from "../components/common/EmptyState";
 import { useAuth } from "../context/AuthContext";
+import { useAccountData } from "../hooks/useAccountData";
 import { formatDateTime } from "../utils/formatDate";
-
 
 function formatProximity(proximity) {
   const labels = {
@@ -37,60 +30,15 @@ function formatVibe(vibe) {
 function AccountPage() {
   const { user, token, isAuthenticated } = useAuth();
 
-  const [observations, setObservations] = useState([]);
-  const [places, setPlaces] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [actionMessage, setActionMessage] = useState("");
-
-  useEffect(() => {
-    async function loadAccountData() {
-      if (!isAuthenticated || !token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setErrorMessage("");
-
-        const [observationsResponse, placesResponse, favoritesResponse] =
-          await Promise.all([
-            getMyObservations(token),
-            getMyPlaces(token),
-            getMyFavorites(token)
-          ]);
-
-        setObservations(observationsResponse.data || []);
-        setPlaces(placesResponse.data || []);
-        setFavorites(favoritesResponse.data || []);
-      } catch (error) {
-        setErrorMessage(error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadAccountData();
-  }, [isAuthenticated, token]);
-
-  async function handleRemoveFavorite(slug) {
-    try {
-      setActionMessage("");
-
-      await removeFavoriteLocation(slug, token);
-
-      setFavorites((currentFavorites) =>
-        currentFavorites.filter((favorite) => favorite.slug !== slug)
-      );
-
-      setActionMessage("Le lieu a été retiré de vos favoris.");
-    } catch (error) {
-      setErrorMessage(error.message);
-    }
-  }
+  const {
+    observations,
+    places,
+    favorites,
+    loading,
+    errorMessage,
+    actionMessage,
+    removeFavorite
+  } = useAccountData({ isAuthenticated, token });
 
   if (!isAuthenticated) {
     return (
@@ -102,7 +50,7 @@ function AccountPage() {
             observations, vos lieux et vos favoris.
           </p>
 
-          <Link className="primary-link" to="/login">
+          <Link className="primary-link" to="/connexion">
             Se connecter
           </Link>
         </section>
@@ -147,9 +95,7 @@ function AccountPage() {
       <section className="account-section">
         <div className="section-heading">
           <h2>Mes observations</h2>
-          <p>
-            Cette section liste les observations soumises avec votre compte.
-          </p>
+          <p>Consultez les observations soumises avec votre compte.</p>
         </div>
 
         {observations.length === 0 ? (
@@ -164,7 +110,9 @@ function AccountPage() {
                 </div>
 
                 <div className="account-meta">
-                  <span>Proximité : {formatProximity(observation.proximity)}</span>
+                  <span>
+                    Proximité : {formatProximity(observation.proximity)}
+                  </span>
                   <span>Ambiance : {formatVibe(observation.vibe)}</span>
                   <span>{formatDateTime(observation.timestamp)}</span>
                 </div>
@@ -178,8 +126,8 @@ function AccountPage() {
         <div className="section-heading">
           <h2>Mes lieux</h2>
           <p>
-            Ces lieux correspondent aux endroits où vous avez soumis au moins
-            une observation.
+            Ces lieux regroupent les endroits où vous avez déjà soumis une
+            observation.
           </p>
         </div>
 
@@ -212,9 +160,7 @@ function AccountPage() {
       <section className="account-section">
         <div className="section-heading">
           <h2>Mes favoris</h2>
-          <p>
-            Retrouvez ici les lieux que vous avez ajoutés à vos favoris.
-          </p>
+          <p>Retrouvez ici les lieux que vous avez ajoutés à vos favoris.</p>
         </div>
 
         {favorites.length === 0 ? (
@@ -234,7 +180,7 @@ function AccountPage() {
                   <button
                     className="secondary-button"
                     type="button"
-                    onClick={() => handleRemoveFavorite(favorite.slug)}
+                    onClick={() => removeFavorite(favorite.slug)}
                   >
                     Retirer des favoris
                   </button>
