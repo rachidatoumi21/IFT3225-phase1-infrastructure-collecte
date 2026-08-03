@@ -1,28 +1,33 @@
+function hasUsableRecentAmbiance(location) {
+  const averageDb = location?.currentAmbiance?.averageDb;
+  const isRecent = location?.currentAmbiance?.freshness?.isRecent;
+  const level = location?.currentAmbiance?.classification?.level;
+
+  return (
+    typeof averageDb === "number" &&
+    isRecent === true &&
+    level !== "unknown"
+  );
+}
+
+function sortLocationsByQuietestAverage(locations) {
+  return [...locations].sort((a, b) => {
+    return a.currentAmbiance.averageDb - b.currentAmbiance.averageDb;
+  });
+}
+
 function selectQuietPlaceRecommendation(locations) {
   if (!Array.isArray(locations) || locations.length === 0) {
     return null;
   }
 
-  const candidates = locations.filter((location) => {
-    const averageDb = location?.currentAmbiance?.averageDb;
-    const isRecent = location?.currentAmbiance?.freshness?.isRecent;
-    const level = location?.currentAmbiance?.classification?.level;
-
-    return (
-      typeof averageDb === "number" &&
-      isRecent === true &&
-      level !== "unknown"
-    );
-  });
+  const candidates = locations.filter(hasUsableRecentAmbiance);
 
   if (candidates.length === 0) {
     return null;
   }
 
-  const sortedCandidates = [...candidates].sort((a, b) => {
-    return a.currentAmbiance.averageDb - b.currentAmbiance.averageDb;
-  });
-
+  const sortedCandidates = sortLocationsByQuietestAverage(candidates);
   const recommendedLocation = sortedCandidates[0];
 
   return {
@@ -41,5 +46,7 @@ function selectQuietPlaceRecommendation(locations) {
 }
 
 module.exports = {
+  hasUsableRecentAmbiance,
+  sortLocationsByQuietestAverage,
   selectQuietPlaceRecommendation
 };
