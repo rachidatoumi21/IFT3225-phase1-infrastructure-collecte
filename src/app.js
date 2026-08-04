@@ -7,12 +7,19 @@ const deviceRoutes = require("./routes/deviceRoutes");
 const measurementRoutes = require("./routes/measurementRoutes");
 const observationRoutes = require("./routes/observationRoutes");
 const ambianceRoutes = require("./routes/ambianceRoutes");
-
-const errorMiddleware = require("./middlewares/errorMiddleware");
 const locationRoutes = require("./routes/locationRoutes");
 const authRoutes = require("./routes/authRoutes");
-const accountRoutes = require("./routes/accountRoutes");     
+const accountRoutes = require("./routes/accountRoutes");
 const recommendationRoutes = require("./routes/recommendationRoutes");
+
+const {
+  cachePublicResponse,
+  invalidatePublicCacheOnWrite,
+  noStorePrivateResponse
+} = require("./middlewares/cacheMiddleware");
+
+const errorMiddleware = require("./middlewares/errorMiddleware");
+
 const app = express();
 
 app.use(helmet());
@@ -31,13 +38,34 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/devices", deviceRoutes);
-app.use("/api/measurements", measurementRoutes);
-app.use("/api/observations", observationRoutes);
-app.use("/api/ambiance", ambianceRoutes);
-app.use("/api/locations", locationRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/account", accountRoutes);
-app.use("/api/recommendations", recommendationRoutes);
+
+// Lectures publiques mises en cache
+app.use("/api/locations", cachePublicResponse(60 * 1000), locationRoutes);
+
+app.use("/api/ambiance", cachePublicResponse(5 * 60 * 1000), ambianceRoutes);
+
+app.use(
+  "/api/recommendations",
+  cachePublicResponse(60 * 1000),
+  recommendationRoutes
+);
+
+// Écritures : jamais mises en cache et invalidation du cache public
+app.use(
+  "/api/measurements",
+  invalidatePublicCacheOnWrite,
+  measurementRoutes
+);
+
+app.use(
+  "/api/observations",
+  invalidatePublicCacheOnWrite,
+  observationRoutes
+);
+
+// Routes privées : jamais mises en cache
+app.use("/api/auth", noStorePrivateResponse, authRoutes);
+app.use("/api/account", noStorePrivateResponse, accountRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
