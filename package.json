@@ -9,7 +9,8 @@
     "seed": "node scripts/seed.js",
     "bridge": "node scripts/phyphoxBridge.js",
     "inspect:phyphox": "node scripts/inspectPhyphox.js",
-    "seed:locations": "node scripts/seedPhase2Locations.js"
+    "seed:locations": "node scripts/seedPhase2Locations.js",
+    "test": "vitest run --globals"
   },
   "keywords": [
     "ift3225",
@@ -34,6 +35,7 @@
     "morgan": "^1.11.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "vitest": "^4.1.10"
   }
 }
