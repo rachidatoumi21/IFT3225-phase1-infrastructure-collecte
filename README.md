@@ -1,4 +1,4 @@
-# IFT3225 — Ambiance API — Phase 2
+# IFT3225 — Ambiance API — 
 
 Projet réalisé dans le cadre du cours **IFT3225 — Technologies de l’Internet**.
 
