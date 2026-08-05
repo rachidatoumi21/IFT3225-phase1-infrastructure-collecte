@@ -702,3 +702,240 @@ Compiler le client :
 cd client
 npm run build
 ```
+---
+
+## Déploiement Render - Phase 3
+
+La phase 3 du projet est déployée sur Render avec deux services séparés :
+
+- un backend Express déployé comme Web Service ;
+- un frontend React/Vite déployé comme Static Site.
+
+Cette séparation permet de garder une architecture claire : le backend expose l’API et communique avec MongoDB Atlas, tandis que le frontend consomme cette API à partir d’une URL publique sécurisée en HTTPS.
+
+---
+
+### URLs de production
+
+Backend API :
+
+```text
+https://ift3225-ambiance-api.onrender.com
+```
+
+Frontend React :
+
+```text
+https://ift3225-ambiance-client.onrender.com
+```
+
+---
+
+### Déploiement du backend
+
+Le backend Express est déployé sur Render comme Web Service Node.js.
+
+Configuration utilisée :
+
+```text
+Service type: Web Service
+Name: ift3225-ambiance-api
+Branch: rachida-phase3
+Root Directory: vide
+Runtime: Node
+Build Command: npm install
+Start Command: npm start
+```
+
+Le backend utilise MongoDB Atlas comme base de données distante. Les variables sensibles ne sont pas publiées dans le dépôt GitHub. Elles sont configurées directement dans l’environnement Render.
+
+Variables d’environnement configurées dans Render pour le backend :
+
+```text
+NODE_ENV=production
+MONGODB_URI=valeur configurée dans Render
+API_KEY=valeur configurée dans Render
+JWT_SECRET=valeur configurée dans Render
+PHYPOX_BUFFER=dB
+FRONTEND_URL=https://ift3225-ambiance-client.onrender.com
+```
+
+Les variables suivantes sont sensibles et ne doivent jamais être exposées dans le dépôt GitHub :
+
+```text
+MONGODB_URI
+API_KEY
+JWT_SECRET
+```
+
+Le serveur utilise le port fourni automatiquement par Render :
+
+```js
+const PORT = process.env.PORT || 3000;
+```
+
+Cette configuration permet au backend de fonctionner en local sur le port 3000, tout en utilisant le port dynamique fourni par Render en production.
+
+---
+
+### Déploiement du frontend
+
+Le frontend React/Vite est déployé sur Render comme Static Site.
+
+Configuration utilisée :
+
+```text
+Service type: Static Site
+Name: ift3225-ambiance-client
+Branch: rachida-phase3
+Root Directory: client
+Build Command: npm install && npm run build
+Publish Directory: dist
+```
+
+Variable d’environnement configurée dans Render pour le frontend :
+
+```text
+VITE_API_BASE_URL=https://ift3225-ambiance-api.onrender.com/api
+```
+
+Cette variable permet au client React de consommer l’API backend déployée sur Render, au lieu d’utiliser l’API locale `http://localhost:3000/api`.
+
+Aucune variable sensible n’est configurée dans le frontend. Le frontend ne contient pas :
+
+```text
+MONGODB_URI
+API_KEY
+JWT_SECRET
+```
+
+Ces informations restent uniquement côté backend.
+
+---
+
+### Redirection React Router
+
+L’application React utilise des routes côté client, par exemple :
+
+```text
+/compte
+/connexion
+/inscription
+/lieux/maison-test
+```
+
+Pour éviter une erreur 404 lors d’un rafraîchissement direct sur ces routes, une règle de rewrite a été ajoutée dans Render :
+
+```text
+Source: /*
+Destination: /index.html
+Action: Rewrite
+```
+
+Cette règle permet à Render de toujours renvoyer `index.html`, puis React Router prend en charge l’affichage de la bonne page.
+
+---
+
+### Vérification du backend déployé
+
+Les endpoints suivants permettent de vérifier que le backend est bien disponible en production :
+
+```text
+https://ift3225-ambiance-api.onrender.com/
+https://ift3225-ambiance-api.onrender.com/api/locations
+https://ift3225-ambiance-api.onrender.com/api/recommendations/quiet-place
+```
+
+Résultat attendu :
+
+```text
+success: true
+```
+
+Pour `/api/locations`, l’API doit retourner les lieux utilisés dans le projet, comme :
+
+```text
+maison-test
+mcdonald
+bibliotheque-udem
+```
+
+---
+
+### Vérification du frontend déployé
+
+L’application frontend est accessible ici :
+
+```text
+https://ift3225-ambiance-client.onrender.com
+```
+
+Parcours utilisateur testés en production :
+
+```text
+Accueil
+Carte des lieux
+Portrait détaillé d’un lieu
+Recommandation du lieu calme
+Connexion
+Espace Mon compte
+Ajout d’un lieu aux favoris
+Retrait d’un lieu des favoris
+Soumission d’une observation authentifiée
+```
+
+Les routes directes suivantes doivent aussi fonctionner grâce à la règle de rewrite :
+
+```text
+https://ift3225-ambiance-client.onrender.com/compte
+https://ift3225-ambiance-client.onrender.com/connexion
+https://ift3225-ambiance-client.onrender.com/lieux/maison-test
+```
+
+---
+
+### Lien entre le frontend et le backend
+
+Le lien entre les deux services est configuré de la façon suivante :
+
+- le frontend utilise `VITE_API_BASE_URL` pour appeler l’API backend ;
+- le backend utilise `FRONTEND_URL` pour autoriser l’origine du frontend avec CORS.
+
+Configuration côté frontend :
+
+```text
+VITE_API_BASE_URL=https://ift3225-ambiance-api.onrender.com/api
+```
+
+Configuration côté backend :
+
+```text
+FRONTEND_URL=https://ift3225-ambiance-client.onrender.com
+```
+
+Cette configuration permet au frontend Render de communiquer avec le backend Render sans erreur CORS.
+
+---
+
+### Limite du plan gratuit Render
+
+Le backend utilise le plan gratuit de Render. Après une période d’inactivité, le service peut se mettre en veille. La première requête après cette période peut donc être plus lente, parfois autour de 50 secondes ou plus.
+
+Cette limite est liée au plan gratuit. Une solution possible serait d’utiliser un plan Render payant ou une stratégie de maintien actif si l’application devait être utilisée en production réelle.
+
+---
+
+### Résumé du déploiement
+
+Le déploiement final de la phase 3 comprend :
+
+```text
+Backend Express en ligne sur Render
+Frontend React/Vite en ligne sur Render
+MongoDB Atlas utilisé comme base de données distante
+Variables sensibles configurées dans Render
+Communication frontend-backend configurée par variables d’environnement
+CORS configuré avec FRONTEND_URL
+Routes React protégées par une règle de rewrite
+Application accessible en HTTPS
+```
